@@ -5,7 +5,12 @@ resource "aws_instance" "Terraform_Instance" {
   user_data            = file("userdata.sh")
   iam_instance_profile = aws_iam_instance_profile.ec2_instance.name
   security_groups      = aws_security_group.SG-for-instance.id
-  tags                 = local.common_tags
+  tags                 = merge (
+    local.common_tags,
+    {
+     name = "SG-for-instance -${var.env}"
+    }
+  )
 }
 
 resource "aws_security_group" "SG-for-instance" {
@@ -65,12 +70,10 @@ resource "aws_iam_role" "tf-role" {
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
-
     principals {
       type        = "Service"
       identifiers = ["ec2.amazon.com"]
     }
-
     actions = ["sts:AssumeRole"]
   }
 }
