@@ -1,8 +1,7 @@
 terraform {
-  backend "remote" {
-    bucket = "mustafat-remote-state"
+  backend "s3" {
+    bucket = "mustafa-terraform-state-2023"
     key    = "ec2/terraform.tfstate"
-    dynamodb_table = "mustafat-remote-state-ddb"
     region = "us-east-1"
   }
 }
