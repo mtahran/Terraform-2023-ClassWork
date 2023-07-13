@@ -5,7 +5,7 @@ variable "instance_type" {
 }
 
 variable "key_name" {
-  default     = "macbook@400048mbp"
+  default     = "key_name"
   description = "my local computer's keyname"
   type        = string
 }

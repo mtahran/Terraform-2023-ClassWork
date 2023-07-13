@@ -29,7 +29,7 @@ resource "aws_security_group_rule" "ingress-1" {
   from_port         = 22
   to_port           = 22
   protocol          = "tcp"
-  cidr_blocks       = ["98.227.136.153/32", "209.122.40.225/32"]
+  cidr_blocks       = [" ", " "]
   security_group_id = aws_security_group.SG-for-instance.id
 }
 

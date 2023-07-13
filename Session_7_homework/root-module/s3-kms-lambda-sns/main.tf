@@ -4,7 +4,20 @@ module "s3" {
   aws_region = "us-east-1"
 }
 
+resource "aws_lambda_function" "s3_to_sns" {
+  description = "sends SNS notification when an object is put into S3 bucket"
+  function_name = "s3_to_sns"
+  role          = aws_iam_role.iam_for_lambda.arn
+  handler       = "exports.example"
+  runtime       = "go1.x"
+}
+
+resource "aws_iam_role" "iam_for_lambda" {
+  name               = "iam_for_lambda"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
 data "aws_iam_policy_document" "assume_role" {
+  Version = "2012-10-17"
   statement {
     effect = "Allow"
 
@@ -17,29 +30,20 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-resource "aws_iam_role" "iam_for_lambda" {
-  name               = "iam_for_lambda"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
-}
+
 
 resource "aws_lambda_permission" "allow_bucket" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.func.arn
+  function_name = aws_lambda_function.s3_to_sns.arn
   principal     = "s3.amazonaws.com"
-  source_arn    = aws_s3_bucket.bucket.arn ?????
+  source_arn    = aws_s3_bucket.mustafat-hw-bucket.arn
 }
 
-resource "aws_lambda_function" "func" {
-  filename      = "your-function.zip"
-  function_name = "example_lambda_name"
-  role          = aws_iam_role.iam_for_lambda.arn
-  handler       = "exports.example"
-  runtime       = "go1.x"
-}
+
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.bucket.id ????
+  bucket = aws_s3_bucket.mustafa-hw-bucket.id
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.func.arn
