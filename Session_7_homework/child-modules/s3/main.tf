@@ -114,7 +114,6 @@ resource "aws_s3_bucket_lifecycle_configuration" "mustafat-hw-bucket-lifecycle" 
       days          = 30
       storage_class = "GLACIER"
     }
-    status = "Enabled"
   }
 
   rule {

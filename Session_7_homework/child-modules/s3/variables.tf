@@ -15,5 +15,5 @@ variable "env" {
 
 variable "github_kms_key" {
   description = "KMS key sourced from GitHub"
-  default     = "https://github.com/mtahran/Terraform-2023-ClassWork/tree/main/homework/kms-key.txt"
+  default     = "https://github.com/mtahran/kms_key/blob/main/kms_key.txt"
 }
