@@ -10,6 +10,8 @@ data "aws_caller_identity" "current" {}
 resource "aws_lambda_function" "s3_to_sns" {
   description = "sends SNS notification when an object is put into S3 bucket"
   function_name = "s3_to_sns"
+  s3_bucket = var.bucket_name
+  s3_key = "lambda.zip"
   role          = aws_iam_role.iam_for_lambda.arn
   handler       = "exports.example"
   runtime       = "python3.10"
@@ -72,7 +74,26 @@ resource "aws_lambda_function_event_invoke_config" "invoke_sns" {
 ### SNS Topic Resource published by Lambda Function
 resource "aws_sns_topic" "sns_s3_lambda_topic" {
   name = "sns_s3_lambda_topic"
-  kms_master_key_id = module.s3.github_kms_key
+  kms_master_key_id = var.kms_master_key_id
+  delivery_policy = <<EOF
+{
+  "http": {
+    "defaultHealthyRetryPolicy": {
+      "minDelayTarget": 20,
+      "maxDelayTarget": 20,
+      "numRetries": 3,
+      "numMaxDelayRetries": 0,
+      "numNoDelayRetries": 0,
+      "numMinDelayRetries": 0,
+      "backoffFunction": "linear"
+    },
+    "disableSubscriptionOverrides": false,
+    "defaultThrottlePolicy": {
+      "maxReceivesPerSecond": 1
+    }
+  }
+}
+EOF
   tags = merge(
     local.common_tags,
     {

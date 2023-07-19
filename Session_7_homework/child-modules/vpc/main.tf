@@ -110,7 +110,7 @@ resource "aws_route_table" "private_rtb" {
   vpc_id = aws_vpc.newVPC.id
 
   route {
-    cidr_block     = "0.0.0.0/0"
+    cidr_block     = var.vpc_cidr_block
     nat_gateway_id = aws_nat_gateway.nat_gw.id
   }
   tags = merge(

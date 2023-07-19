@@ -6,8 +6,6 @@ module "ec2" {
   elastic_ip = ???????
 }
 
-
-
 output "arn_ebs_volume" {
   value = "aws_ebs_volume.ebs_to_myec2.arn" ???????
 }
