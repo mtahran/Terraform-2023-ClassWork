@@ -7,5 +7,5 @@ module "ec2" {
   env           = "dev"
   elastic_ip    = data.terraform_remote_state.newVPC.public_ip
   aws_vpc       = data.terraform_remote_state.newVPC.id
-  kms_key_arn   = "arn:aws:kms:us-east-1:937346363436:key/c555f436-7e9d-477d-abf2-b714b02910fe"
+  kms_key_arn   = data.terraform_remote_state.kms-key.arn
 }

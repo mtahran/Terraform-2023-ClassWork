@@ -2,7 +2,7 @@ resource "aws_instance" "myec2" {
     ami           = var.instance_ami
     instance_type = var.instance_type
     key_name      = var.key_name
-    # user_data     = file("template-file/user_data.sh")
+    user_data     = file("user_data.sh")
     vpc_security_group_ids = [aws_security_group.sg_myec2.id]
     tags = merge (
       local.common_tags,
