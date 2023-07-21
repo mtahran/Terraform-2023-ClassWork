@@ -1,4 +1,4 @@
-resource "aws_vpc" "newVPC" {
+resource "aws_vpc" "project-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = merge(
     local.common_tags,
@@ -9,7 +9,7 @@ resource "aws_vpc" "newVPC" {
 }
 # Subnets
 resource "aws_subnet" "private1" {
-  vpc_id            = aws_vpc.newVPC.id
+  vpc_id            = aws_vpc.project-vpc.id
   cidr_block        = var.private_cidr1_subnet
   availability_zone = var.aws_az_1
   tags = {
@@ -18,7 +18,7 @@ resource "aws_subnet" "private1" {
 }
 
 resource "aws_subnet" "private2" {
-  vpc_id            = aws_vpc.newVPC.id
+  vpc_id            = aws_vpc.project-vpc.id
   cidr_block        = var.private_cidr2_subnet
   availability_zone = var.aws_az_2
   tags = {
@@ -26,8 +26,17 @@ resource "aws_subnet" "private2" {
   }
 }
 
+resource "aws_subnet" "private3" {
+  vpc_id            = aws_vpc.project-vpc.id
+  cidr_block        = var.private_cidr3_subnet
+  availability_zone = var.aws_az_3
+  tags = {
+    Name = "private3"
+  }
+}
+
 resource "aws_subnet" "public1" {
-  vpc_id            = aws_vpc.newVPC.id
+  vpc_id            = aws_vpc.project-vpc.id
   cidr_block        = var.public_cidr1_subnet
   availability_zone = var.aws_az_1
   tags = {
@@ -36,7 +45,7 @@ resource "aws_subnet" "public1" {
 }
 
 resource "aws_subnet" "public2" {
-  vpc_id            = aws_vpc.newVPC.id
+  vpc_id            = aws_vpc.project-vpc.id
   cidr_block        = var.public_cidr2_subnet
   availability_zone = var.aws_az_2
   tags = {
@@ -44,9 +53,18 @@ resource "aws_subnet" "public2" {
   }
 }
 
+resource "aws_subnet" "public3" {
+  vpc_id            = aws_vpc.project-vpc.id
+  cidr_block        = var.public_cidr3_subnet
+  availability_zone = var.aws_az_3
+  tags = {
+    Name = "public3"
+  }
+}
+
 #Internet Gateway, Route Table and Associations to Public Subnets
 resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.newVPC.id
+  vpc_id = aws_vpc.project-vpc.id
   tags = merge(
     local.common_tags,
     {
@@ -56,7 +74,7 @@ resource "aws_internet_gateway" "igw" {
 }
 
 resource "aws_route_table" "public_rtb" {
-  vpc_id = aws_vpc.newVPC.id
+  vpc_id = aws_vpc.project-vpc.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -82,6 +100,11 @@ resource "aws_route_table_association" "public_sub2" {
   route_table_id = aws_route_table.public_rtb.id
 }
 
+resource "aws_route_table_association" "public_sub3" {
+  subnet_id      = aws_subnet.public3.id
+  route_table_id = aws_route_table.public_rtb.id
+}
+
 #NAT Gateway, Elastic IP, Route Table and associations to Private Subnets
 resource "aws_eip" "elastic_ip" {
   domain     = "vpc"
@@ -96,7 +119,8 @@ resource "aws_eip" "elastic_ip" {
 
 resource "aws_nat_gateway" "nat_gw" {
   depends_on    = [aws_internet_gateway.igw]
-  connectivity_type = "private"
+  allocation_id = aws_eip.elastic_ip.id
+  connectivity_type = "public"
   subnet_id     = aws_subnet.public1.id
   tags = merge(
     local.common_tags,
@@ -107,7 +131,7 @@ resource "aws_nat_gateway" "nat_gw" {
 }
 
 resource "aws_route_table" "private_rtb" {
-  vpc_id = aws_vpc.newVPC.id
+  vpc_id = aws_vpc.project-vpc.id
 
   route {
     cidr_block     = "0.0.0.0/0"
@@ -128,5 +152,10 @@ resource "aws_route_table_association" "priv_sub1" {
 
 resource "aws_route_table_association" "priv_sub2" {
   subnet_id      = aws_subnet.private2.id
+  route_table_id = aws_route_table.private_rtb.id
+}
+
+resource "aws_route_table_association" "priv_sub3" {
+  subnet_id      = aws_subnet.private3.id
   route_table_id = aws_route_table.private_rtb.id
 }
