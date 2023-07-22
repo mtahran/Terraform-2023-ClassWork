@@ -1,0 +1,9 @@
+aws_region = "us-east-1"
+aws_vpc = data.terraform_remote_state.project-vpc.id
+public_subnet = data.terraform_remote_state.project-vpc.public1.id
+private_subnet = data.terraform_remote_state.project-vpc.private1.id
+instance_ami = "ami-05548f9cecf47b442" #us-east-1 Amazon Linux
+instance_type = "t2.small"
+key_name = "macbook@400048mbp"
+env = "dev"
+local_ip = "209.122.40.225/32"
